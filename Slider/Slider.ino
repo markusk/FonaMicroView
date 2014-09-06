@@ -1,4 +1,14 @@
-#include <MicroView.h>			// include MicroView library
+// Needed for Adafruit Fona!!
+#include <SoftwareSerial.h>
+
+// The Adafruit FONA library
+// see https://github.com/adafruit/Adafruit_FONA_Library
+#include <Adafruit_FONA.h>
+
+
+// The MicroView library
+// see https://github.com/geekammo/MicroView-Arduino-Library
+#include <MicroView.h>
 
 MicroViewWidget *widget;		// create widget pointer
 MicroViewWidget *widget2;		// create widget pointer
