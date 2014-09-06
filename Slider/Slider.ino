@@ -31,7 +31,7 @@ void setup()
 {
   int returnValue = 0;
 
-  
+
   //-----------------
   // start MicroView
   //-----------------
@@ -62,7 +62,7 @@ void setup()
   // get battery voltage
   //--------------------------------
   returnValue = readBattery();
-  
+
   // display value
   if (returnValue != -1)
   {
@@ -79,22 +79,42 @@ void setup()
 
 
   //--------------------------------
-  // get number of available SMS
+  // unlock phone with PIN
   //--------------------------------
-  returnValue = readNumSMS();
-  
-  // display value
-  if (returnValue != -1)
+  returnValue = unlock();
+
+  if (returnValue == -1)
   {
-    uView.print(returnValue);
-    uView.println(" SMS");
+    uView.println("Error PIN!");
   }
   else
   {
-    uView.println("Error SMS!");
-  }
+    //---------------------
+    // PIN okay. go ahead.
+    //---------------------
 
+    //--------------------------------
+    // get number of available SMS
+    //--------------------------------
+    returnValue = readNumSMS();
+  
+    // display value
+    if (returnValue != -1)
+    {
+      uView.print(returnValue);
+      uView.println(" SMS");
+    }
+    else
+    {
+      uView.println("Error SMS!");
+    }
+    
+  } // PIN okay
+
+
+  //------------------------------------------
   // display the content in the screen buffer
+  //------------------------------------------
   uView.display();
 }
 
@@ -110,8 +130,8 @@ void loop()
 uint16_t readBattery()
 {
   uint16_t vbat = -1;
-  
-  
+
+
   if (! fona.getBattVoltage(&vbat))
   {
     // uView.print("Failed to read Batt");
@@ -134,5 +154,32 @@ int8_t readNumSMS()
   }
 
   return smsnum; 
+}
+
+
+int unlock()
+{
+  // Unlock the SIM with a PIN code
+  char PIN[5];
+
+
+  // PIN
+//  PIN[0] = 0;
+//  PIN[1] = 0;
+//  PIN[2] = 0;
+//  PIN[3] = 0;
+//  PIN[4] = NULL;
+
+  // unlock
+  if (! fona.unlockSIM(PIN))
+  {
+    // error
+    return -1;
+  } 
+  else
+  {
+    // ok
+    return 0;
+  }        
 }
 
