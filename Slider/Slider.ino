@@ -78,12 +78,25 @@ void setup()
   uView.println("");
 
 
+  /* works but not needed
+  //--------------------------------
+  // get SIM card IMEI number
+  //--------------------------------
+  char imei[15] = {0}; // MUST use a 16 character buffer for IMEI!
+  uint8_t imeiLen = fona.getIMEI(imei);
+  
+  if (imeiLen > 0)
+  {
+    uView.println("SIM IMEI: ");
+    uView.println(imei);
+  }
+  */
+
+
   //--------------------------------
   // unlock phone with PIN
   //--------------------------------
-  returnValue = unlock();
-
-  if (returnValue == -1)
+  if (unlock() == -1)
   {
     uView.println("Error PIN!");
   }
@@ -92,6 +105,7 @@ void setup()
     //---------------------
     // PIN okay. go ahead.
     //---------------------
+
 
     //--------------------------------
     // get number of available SMS
@@ -164,10 +178,10 @@ int unlock()
 
 
   // PIN
-//  PIN[0] = 0;
-//  PIN[1] = 0;
-//  PIN[2] = 0;
-//  PIN[3] = 0;
+//  PIN[0] = '0';
+//  PIN[1] = '0';
+//  PIN[2] = '0';
+//  PIN[3] = '0';
 //  PIN[4] = NULL;
 
   // unlock
