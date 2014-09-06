@@ -96,7 +96,7 @@ void setup()
   //--------------------------------
   // unlock phone with PIN
   //--------------------------------
-  if (unlock() == -1)
+  if (unlockSIM() == -1)
   {
     uView.println("Error PIN!");
   }
@@ -171,7 +171,7 @@ int8_t readNumSMS()
 }
 
 
-int unlock()
+int unlockSIM()
 {
   // Unlock the SIM with a PIN code
   char PIN[5];
