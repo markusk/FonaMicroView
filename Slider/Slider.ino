@@ -29,6 +29,9 @@ MicroViewWidget *widgetBattery;
 
 void setup()
 {
+  int returnValue = 0;
+
+  
   //-----------------
   // start MicroView
   //-----------------
@@ -50,11 +53,46 @@ void setup()
     while (1);
   }
 
-  // FONA is Okay... We continue. :-)
 
-  // get FONAs battery voltage
-  // and show it
-  widgetBattery->setValue( readBattery() );
+  //----------------------------------
+  // FONA is Okay... We continue. :-)
+  //----------------------------------
+
+  //--------------------------------
+  // get battery voltage
+  //--------------------------------
+  returnValue = readBattery();
+  
+  // display value
+  if (returnValue != -1)
+  {
+    widgetBattery->setValue( returnValue );
+  }
+  else
+  {
+    widgetBattery->setValue(0);
+    uView.println("Error Bat.");
+  }
+
+  // move to next line
+  uView.println("");
+
+
+  //--------------------------------
+  // get number of available SMS
+  //--------------------------------
+  returnValue = readNumSMS();
+  
+  // display value
+  if (returnValue != -1)
+  {
+    uView.print(returnValue);
+    uView.println(" SMS");
+  }
+  else
+  {
+    uView.println("Error SMS!");
+  }
 
   // display the content in the screen buffer
   uView.display();
@@ -71,17 +109,30 @@ void loop()
 // read the battery voltage
 uint16_t readBattery()
 {
-  uint16_t vbat;
+  uint16_t vbat = -1;
   
   
   if (! fona.getBattVoltage(&vbat))
   {
     // uView.print("Failed to read Batt");
-    return 0;
+    return -1;
   } 
-  else
+
+  return vbat;
+}
+
+
+// read the number of SMS's
+int8_t readNumSMS()
+{
+  int8_t smsnum = fona.getNumSMS();
+
+
+  if (smsnum < 0)
   {
-    return vbat;
+    return -1;
   }
+
+  return smsnum; 
 }
 
