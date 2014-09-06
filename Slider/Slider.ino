@@ -23,9 +23,8 @@ Adafruit_FONA fona = Adafruit_FONA(&fonaSS, FONA_RST);
 //--------------------------------------------------------------
 #include <MicroView.h>
 
-
-MicroViewWidget *widget;		// create widget pointer
-MicroViewWidget *widget2;		// create widget pointer
+// Create widget pointers
+MicroViewWidget *widgetBattery;
 
 
 void setup()
@@ -38,15 +37,9 @@ void setup()
   // clear page
   uView.clear(PAGE);
 
-  /*
-  // make widget as Slider
-   widget = new MicroViewSlider(0, 0, 0, 1024);
-   // make widget as Silder STYLE1
-   widget2 = new MicroViewSlider(0, 20, 0, 1024, WIDGETSTYLE1);
-   
-   // display the content in the screen buffer
-   uView.display();
-   */
+  // draw Slider widget at x=0, y=0, min=0, max=4700(mV)  
+  widgetBattery = new MicroViewSlider(0, 0, 0, 4700);
+
 
   //--------------------------------
   // See if the FONA is responding
@@ -57,10 +50,11 @@ void setup()
     while (1);
   }
 
-  uView.println("FONA is OK");
+  // FONA is Okay... We continue. :-)
 
   // get FONAs battery voltage
-  readBattery();
+  // and show it
+  widgetBattery->setValue( readBattery() );
 
   // display the content in the screen buffer
   uView.display();
@@ -75,20 +69,19 @@ void loop()
 
 
 // read the battery voltage
-void readBattery()
+uint16_t readBattery()
 {
   uint16_t vbat;
   
   
   if (! fona.getBattVoltage(&vbat))
   {
-    uView.print("Failed to read Batt");
+    // uView.print("Failed to read Batt");
+    return 0;
   } 
   else
   {
-    uView.print("Bat:"); 
-    uView.print(vbat); 
-    uView.print("mV");
+    return vbat;
   }
 }
 
