@@ -1,3 +1,16 @@
+//--------------------------------------------------------------
+// Arduino Pins
+//--------------------------------------------------------------
+const int FONA_RX   =  2;
+const int FONA_TX   =  3;
+const int FONA_RST  =  4;
+const int buttonPin = A0; // Pushbutton
+//--------------------------------------------------------------
+// other global stuff
+//--------------------------------------------------------------
+int returnValue = 0;
+
+
 
 //--------------------------------------------------------------
 // The Adafruit FONA library
@@ -6,15 +19,14 @@
 #include <SoftwareSerial.h>
 #include <Adafruit_FONA.h>
 
-#define FONA_RX 2
-#define FONA_TX 3
-#define FONA_RST 4
-
 // this is a large buffer for replies
 char replybuffer[255];
 
 SoftwareSerial fonaSS = SoftwareSerial(FONA_TX, FONA_RX);
 Adafruit_FONA fona = Adafruit_FONA(&fonaSS, FONA_RST);
+
+// store the state if FONA is okay or not (init okay etc.)
+boolean FONAstate = false;
 
 
 //--------------------------------------------------------------
@@ -29,7 +41,10 @@ MicroViewWidget *widgetBattery;
 
 void setup()
 {
-  int returnValue = 0;
+  //--------------------
+  // setup Arduino PINs
+  //--------------------
+  pinMode(buttonPin, INPUT_PULLUP);     
 
 
   //-----------------
@@ -98,6 +113,8 @@ void setup()
   //--------------------------------
   if (unlockSIM() == -1)
   {
+    FONAstate = false;
+    
     uView.println("Error PIN!");
   }
   else
@@ -106,22 +123,7 @@ void setup()
     // PIN okay. go ahead.
     //---------------------
 
-
-    //--------------------------------
-    // get number of available SMS
-    //--------------------------------
-    returnValue = readNumSMS();
-  
-    // display value
-    if (returnValue != -1)
-    {
-      uView.print(returnValue);
-      uView.println(" SMS");
-    }
-    else
-    {
-      uView.println("Error SMS!");
-    }
+    FONAstate = true;
     
   } // PIN okay
 
@@ -135,6 +137,38 @@ void setup()
 
 void loop()
 {
+  if (FONAstate == true)
+  {
+    // read button
+    if (digitalRead(buttonPin) == LOW)
+    {
+      //--------------------------------
+      // get number of available SMS
+      //--------------------------------
+      returnValue = readNumSMS();
+    
+      // display value
+      if (returnValue != -1)
+      {
+        uView.print(returnValue);
+        uView.println(" SMS");
+      }
+      else
+      {
+        uView.println("Error SMS!");
+      }
+    }
+
+    //------------------------------------------
+    // display the content in the screen buffer
+    //------------------------------------------
+    uView.display();
+
+    // sleep
+    delay(100);
+  } // FONA is okay
+
+  
   // sleep
   delay(100);
 }
